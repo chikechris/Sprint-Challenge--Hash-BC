@@ -9,13 +9,15 @@ from timeit import default_timer as timer
 
 import random
 
+# import json
+
 
 def proof_of_work(last_proof):
     """
     Multi-Ouroboros of Work Algorithm
-    - Find a number p' such that the last five digits of hash(p) are equal
-    to the first five digits of hash(p')
-    - IE:  last_hash: ...AE912345, new hash 12345888...
+    - Find a number p' such that the last six digits of hash(p) are equal
+    to the first six digits of hash(p')
+    - IE:  last_hash: ...AE9123456, new hash 123456888...
     - p is the previous proof, and p' is the new proof
     - Use the same method to generate SHA-256 hashes as the examples in class
     """
@@ -23,8 +25,16 @@ def proof_of_work(last_proof):
     start = timer()
 
     print("Searching for next proof")
+    # initialize proof
     proof = 0
-    #  TODO: Your code here
+    # hash and encode last proof
+    last_hash = hashlib.sha256(str(last_proof).encode()).hexdigest()
+    # valid proof is looking for (last_hash, proof)
+    while valid_proof(last_hash, proof) is False:
+        # proof += 1
+        proof += 50
+        # proof += 100
+        # proof += 1000
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
@@ -32,15 +42,15 @@ def proof_of_work(last_proof):
 
 def valid_proof(last_hash, proof):
     """
-    Validates the Proof:  Multi-ouroborus:  Do the last five characters of
-    the hash of the last proof match the first five characters of the hash
+    Validates the Proof:  Multi-ouroborus:  Do the last six characters of
+    the hash of the last proof match the first six characters of the hash
     of the new proof?
-
-    IE:  last_hash: ...AE912345, new hash 12345E88...
+    IE:  last_hash: ...AE9123456, new hash 123456E88...
     """
-
-    # TODO: Your code here!
-    pass
+    guess_hash = hashlib.sha256(str(proof).encode()).hexdigest()
+    # print('guess_hash = ', guess_hash)
+    # return if last 6 characters of last proof hash = first six characters of new proof hash
+    return guess_hash[:6] == last_hash[-6:]
 
 
 if __name__ == '__main__':
